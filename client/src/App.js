@@ -2,17 +2,24 @@ import React, { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import Login from "./components/Login";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
+  const [notificationMessage, setNotificationMessage] = useState(null);
 
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    blogService
+      .getAll()
+      .then((blogs) => setBlogs(blogs))
+      .catch((error) => {
+        showMessage("Something went wrong. Please try again later.", "error");
+      });
   }, []);
 
   useEffect(() => {
@@ -24,12 +31,18 @@ const App = () => {
     }
   }, []);
 
+  const showMessage = (text, type) => {
+    setNotificationMessage({ text, type });
+
+    setTimeout(() => {
+      setNotificationMessage(null);
+    }, 4000);
+  };
+
   const handleLogout = () => {
     window.localStorage.removeItem("blogAppUser");
     setUser(null);
   };
-
-  if (!user) return <Login setUser={setUser} />;
 
   const handleAddBlog = (event) => {
     event.preventDefault();
@@ -40,13 +53,27 @@ const App = () => {
       url,
     };
 
-    blogService.create(blogObject).then((returnedBlog) => {
-      setBlogs(blogs.concat(returnedBlog));
-      setTitle("");
-      setAuthor("");
-      setUrl("");
-    });
+    blogService
+      .create(blogObject)
+      .then((returnedBlog) => {
+        setBlogs(blogs.concat(returnedBlog));
+        showMessage(`a new blog ${title} by ${author} added`);
+        setTitle("");
+        setAuthor("");
+        setUrl("");
+      })
+      .catch((error) => {
+        if (!error.response.data.errorMessage) {
+          return showMessage(
+            "Something went wrong. Please try again later.",
+            "error"
+          );
+        }
+        showMessage(error.response.data.errorMessage, "error");
+      });
   };
+
+  if (!user) return <Login setUser={setUser} />;
 
   return (
     <div className="app">
@@ -57,7 +84,9 @@ const App = () => {
         </h3>
       )}
 
-      <h3>Login to Blog App</h3>
+      <Notification message={notificationMessage} />
+
+      <h3>Add Blog</h3>
       <div style={{ margin: "2rem 0" }}>
         <form onSubmit={handleAddBlog}>
           <div>

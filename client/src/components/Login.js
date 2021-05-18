@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import loginService from "../services/login";
 import blogService from "../services/blogs";
+import Notification from "./Notification";
 
 const Login = ({ setUser }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -21,7 +23,16 @@ const Login = ({ setUser }) => {
 
       setUser(user);
     } catch (error) {
-      console.log(error);
+      if (!error.response.data.errorMessage) {
+        return setErrorMessage({
+          text: "Something went wrong. Please try again later.",
+          type: "error",
+        });
+      }
+      setErrorMessage({
+        text: error.response.data.errorMessage,
+        type: "error",
+      });
     }
   };
 
@@ -29,6 +40,7 @@ const Login = ({ setUser }) => {
     <div className="login">
       <div>
         <h3>Login to Blog App</h3>
+        <Notification message={errorMessage} />
         <form onSubmit={handleLogin}>
           <div>
             username
