@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import Login from "./components/Login";
 import Notification from "./components/Notification";
+import AddBlogForm from "./components/AddBlogForm";
+import Toggleable from "./components/Toggleable";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
   const [notificationMessage, setNotificationMessage] = useState(null);
 
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
+  const blogFormRef = useRef();
 
   useEffect(() => {
     blogService
@@ -44,23 +44,15 @@ const App = () => {
     setUser(null);
   };
 
-  const handleAddBlog = (event) => {
-    event.preventDefault();
-
-    const blogObject = {
-      title,
-      author,
-      url,
-    };
-
+  const addBlog = (blogObject) => {
+    blogFormRef.current.toggleVisibility();
     blogService
       .create(blogObject)
       .then((returnedBlog) => {
         setBlogs(blogs.concat(returnedBlog));
-        showMessage(`a new blog ${title} by ${author} added`);
-        setTitle("");
-        setAuthor("");
-        setUrl("");
+        showMessage(
+          `a new blog ${blogObject.title} by ${blogObject.author} added`
+        );
       })
       .catch((error) => {
         if (!error.response.data.errorMessage) {
@@ -75,50 +67,25 @@ const App = () => {
 
   if (!user) return <Login setUser={setUser} />;
 
+  const addBlogForm = () => (
+    <Toggleable buttonLabel="Add blog" ref={blogFormRef}>
+      <AddBlogForm createBlog={addBlog} />
+    </Toggleable>
+  );
+
   return (
     <div className="app">
       <h2>blogs</h2>
       {user && (
-        <h3>
-          {user.name} logged in <button onClick={handleLogout}>logout</button>
-        </h3>
+        <div>
+          <h3>
+            {user.name} logged in <button onClick={handleLogout}>logout</button>
+          </h3>
+          {addBlogForm()}
+        </div>
       )}
 
       <Notification message={notificationMessage} />
-
-      <h3>Add Blog</h3>
-      <div style={{ margin: "2rem 0" }}>
-        <form onSubmit={handleAddBlog}>
-          <div>
-            title
-            <input
-              type="text"
-              value={title}
-              name="Title"
-              onChange={({ target }) => setTitle(target.value)}
-            />
-          </div>
-          <div>
-            author
-            <input
-              type="text"
-              value={author}
-              name="Author"
-              onChange={({ target }) => setAuthor(target.value)}
-            />
-          </div>
-          <div>
-            url
-            <input
-              type="text"
-              value={url}
-              name="Url"
-              onChange={({ target }) => setUrl(target.value)}
-            />
-          </div>
-          <button type="submit">Add blog</button>
-        </form>
-      </div>
 
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
