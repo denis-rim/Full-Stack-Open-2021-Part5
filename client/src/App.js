@@ -16,7 +16,7 @@ const App = () => {
   useEffect(() => {
     blogService
       .getAll()
-      .then((blogs) => setBlogs(blogs))
+      .then((blogs) => setBlogs(blogs.sort((a, b) => b.likes - a.likes)))
       .catch((error) => {
         showMessage("Something went wrong. Please try again later.", "error");
       });
@@ -69,6 +69,7 @@ const App = () => {
     blogService
       .like(id, blogObject)
       .then((returnedBlog) => {
+        setBlogs(blogs.sort((a, b) => b.likes - a.likes));
         showMessage(`you liked ${blogObject.title}`);
       })
       .catch((error) => {
