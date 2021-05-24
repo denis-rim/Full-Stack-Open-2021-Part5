@@ -16,7 +16,7 @@ const App = () => {
   useEffect(() => {
     blogService
       .getAll()
-      .then((blogs) => setBlogs(blogs.sort((a, b) => b.likes - a.likes)))
+      .then((blogs) => setBlogs(blogs))
       .catch((error) => {
         showMessage("Something went wrong. Please try again later.", "error");
       });
@@ -69,8 +69,35 @@ const App = () => {
     blogService
       .like(id, blogObject)
       .then((returnedBlog) => {
-        setBlogs(blogs.sort((a, b) => b.likes - a.likes));
         showMessage(`you liked ${blogObject.title}`);
+      })
+      .catch((error) => {
+        if (!error.response.data.errorMessage) {
+          return showMessage(
+            "Something went wrong. Please try again later.",
+            "error"
+          );
+        }
+        showMessage(error.response.data.errorMessage, "error");
+      });
+  };
+
+  const deleteBlog = (id, blogObject) => {
+    const result = window.confirm(`Delete ${blogObject.title}?`);
+
+    if (!result) {
+      return;
+    }
+
+    blogService
+      .remove(id)
+      .then(() => {
+        setBlogs(
+          blogs
+            .filter((blog) => blog.id !== id)
+            .sort((a, b) => b.likes - a.likes)
+        );
+        showMessage(`blog was removed`);
       })
       .catch((error) => {
         if (!error.response.data.errorMessage) {
@@ -105,9 +132,17 @@ const App = () => {
 
       <Notification message={notificationMessage} />
 
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} addLike={likeBlog} />
-      ))}
+      {blogs
+        .sort((a, b) => b.likes - a.likes)
+        .map((blog) => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            addLike={likeBlog}
+            removeBlog={deleteBlog}
+            user={user}
+          />
+        ))}
     </div>
   );
 };

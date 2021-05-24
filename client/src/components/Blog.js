@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const Blog = ({ blog, addLike }) => {
+const Blog = ({ user, blog, addLike, removeBlog }) => {
   const [visible, setVisible] = useState(false);
 
   const toggleVisibility = () => {
@@ -20,27 +20,32 @@ const Blog = ({ blog, addLike }) => {
     addLike(blog.id, blog);
   };
 
-  const displayShortInfo = () => (
-    <div>
-      {blog.title} {blog.author}
-    </div>
-  );
+  const deleteBlog = async () => {
+    await removeBlog(blog.id, blog);
+  };
 
-  const displayFullInfo = () => (
-    <div>
-      <p>Title: {blog.title}</p>
-      <p>{blog.url}</p>
-      <p>
-        Likes: {blog.likes} <button onClick={likeBlog}>like</button>
-      </p>
-      <p>{blog.author}</p>
-    </div>
-  );
+  console.log(blog.user[0].username);
 
   return (
     <div style={blogStyle}>
-      {!visible ? displayShortInfo() : displayFullInfo()}
-      <button onClick={toggleVisibility}>{!visible ? "View" : "Hide"}</button>
+      <div>
+        <span>{blog.title}</span>
+        <button onClick={toggleVisibility}>{!visible ? "View" : "Hide"}</button>
+      </div>
+      {visible && (
+        <div>
+          <p>Title: {blog.title}</p>
+          <p>{blog.url}</p>
+          <span>
+            Likes: {blog.likes} <button onClick={likeBlog}>like</button>
+          </span>
+          <p>{blog.author}</p>
+
+          {user.username === blog.user[0].username ? (
+            <button onClick={deleteBlog}>Remove</button>
+          ) : null}
+        </div>
+      )}
     </div>
   );
 };
