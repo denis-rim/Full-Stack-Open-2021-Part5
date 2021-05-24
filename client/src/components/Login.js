@@ -1,41 +1,41 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
-import loginService from "../services/login";
-import blogService from "../services/blogs";
-import Notification from "./Notification";
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
+import loginService from '../services/login'
+import blogService from '../services/blogs'
+import Notification from './Notification'
 
 const Login = ({ setUser }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
 
   const handleLogin = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
     try {
       const user = await loginService.login({
         username,
         password,
-      });
+      })
 
-      window.localStorage.setItem("blogAppUser", JSON.stringify(user));
+      window.localStorage.setItem('blogAppUser', JSON.stringify(user))
 
-      blogService.setToken(user.token);
+      blogService.setToken(user.token)
 
-      setUser(user);
+      setUser(user)
     } catch (error) {
       if (!error.response.data.errorMessage) {
         return setErrorMessage({
-          text: "Something went wrong. Please try again later.",
-          type: "error",
-        });
+          text: 'Something went wrong. Please try again later.',
+          type: 'error',
+        })
       }
       setErrorMessage({
         text: error.response.data.errorMessage,
-        type: "error",
-      });
+        type: 'error',
+      })
     }
-  };
+  }
 
   return (
     <div className="login">
@@ -65,11 +65,11 @@ const Login = ({ setUser }) => {
         </form>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login
 
 Login.propTypes = {
   setUser: PropTypes.func.isRequired,
-};
+}

@@ -1,34 +1,34 @@
-import React, { useState } from "react";
+import React, { useState } from 'react'
 
 const Blog = ({ user, blog, addLike, removeBlog }) => {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(false)
 
   const toggleVisibility = () => {
-    setVisible(!visible);
-  };
+    setVisible(!visible)
+  }
 
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
-    border: "solid",
+    border: 'solid',
     borderWidth: 1,
     marginBottom: 5,
-  };
+  }
 
   const likeBlog = () => {
-    blog.likes += 1;
-    addLike(blog.id, blog);
-  };
+    blog.likes += 1
+    addLike(blog.id, blog)
+  }
 
   const deleteBlog = async () => {
-    await removeBlog(blog.id, blog);
-  };
+    await removeBlog(blog.id, blog)
+  }
 
   return (
     <div style={blogStyle}>
       <div>
         <span>{blog.title}</span>
-        <button onClick={toggleVisibility}>{!visible ? "View" : "Hide"}</button>
+        <button onClick={toggleVisibility}>{!visible ? 'View' : 'Hide'}</button>
       </div>
       {visible && (
         <div>
@@ -45,6 +45,6 @@ const Blog = ({ user, blog, addLike, removeBlog }) => {
         </div>
       )}
     </div>
-  );
-};
-export default Blog;
+  )
+}
+export default Blog
