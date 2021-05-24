@@ -65,6 +65,23 @@ const App = () => {
       });
   };
 
+  const likeBlog = (id, blogObject) => {
+    blogService
+      .like(id, blogObject)
+      .then((returnedBlog) => {
+        showMessage(`you liked ${blogObject.title}`);
+      })
+      .catch((error) => {
+        if (!error.response.data.errorMessage) {
+          return showMessage(
+            "Something went wrong. Please try again later.",
+            "error"
+          );
+        }
+        showMessage(error.response.data.errorMessage, "error");
+      });
+  };
+
   if (!user) return <Login setUser={setUser} />;
 
   const addBlogForm = () => (
@@ -88,7 +105,7 @@ const App = () => {
       <Notification message={notificationMessage} />
 
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} addLike={likeBlog} />
       ))}
     </div>
   );

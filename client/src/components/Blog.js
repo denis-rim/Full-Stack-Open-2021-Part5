@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-const Blog = ({ blog }) => {
+
+const Blog = ({ blog, addLike }) => {
   const [visible, setVisible] = useState(false);
 
   const toggleVisibility = () => {
@@ -14,6 +15,11 @@ const Blog = ({ blog }) => {
     marginBottom: 5,
   };
 
+  const likeBlog = () => {
+    blog.likes += 1;
+    addLike(blog.id, blog);
+  };
+
   const displayShortInfo = () => (
     <div>
       {blog.title} {blog.author}
@@ -25,13 +31,11 @@ const Blog = ({ blog }) => {
       <p>Title: {blog.title}</p>
       <p>{blog.url}</p>
       <p>
-        Likes: {blog.likes} <button>like</button>
+        Likes: {blog.likes} <button onClick={likeBlog}>like</button>
       </p>
       <p>{blog.author}</p>
     </div>
   );
-
-  console.log(blog);
 
   return (
     <div style={blogStyle}>
