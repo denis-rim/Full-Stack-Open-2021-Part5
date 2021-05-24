@@ -24,8 +24,6 @@ const Blog = ({ user, blog, addLike, removeBlog }) => {
     await removeBlog(blog.id, blog);
   };
 
-  console.log(blog.user[0].username);
-
   return (
     <div style={blogStyle}>
       <div>
