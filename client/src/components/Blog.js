@@ -35,8 +35,11 @@ const Blog = ({ user, blog, addLike, removeBlog }) => {
         <div>
           <p>Title: {blog.title}</p>
           <p>{blog.url}</p>
-          <span>
-            Likes: {blog.likes} <button onClick={likeBlog}>like</button>
+          <span id="like-count">
+            Likes: {blog.likes}{' '}
+            <button id="like-button" onClick={likeBlog}>
+              like
+            </button>
           </span>
           <p>{blog.author}</p>
 

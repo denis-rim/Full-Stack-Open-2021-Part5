@@ -40,9 +40,7 @@ describe('Blog app', function () {
 
     describe('when logged in', function () {
       beforeEach(function () {
-        cy.get('#username').type('newuser')
-        cy.get('#password').type('password')
-        cy.get('#login-button').click()
+        cy.login({ username: 'newuser', password: 'password' })
       })
 
       it('a blog can be created', function () {
@@ -54,6 +52,23 @@ describe('Blog app', function () {
         cy.get('#add-blog-button').click()
 
         cy.contains('Cypress blog')
+      })
+
+      describe('and blog exist', function () {
+        beforeEach(function () {
+          cy.createBlog({
+            title: 'Denis new blog',
+            author: 'Denis',
+            url: 'https://www.denis.com/',
+          })
+        })
+
+        it('a user can like a blog', function () {
+          cy.contains('View').click()
+          cy.get('#like-count').should('contain', 0)
+          cy.get('#like-button').click()
+          cy.get('#like-count').should('contain', 1)
+        })
       })
     })
   })
