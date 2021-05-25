@@ -6,8 +6,13 @@ const Notification = ({ message }) => {
   }
 
   const style = message.type === 'error' ? 'red' : 'green'
+  const className = message.type === 'error' ? 'error' : 'succeed'
 
-  return <div style={{ color: `${style}` }}>{message.text}</div>
+  return (
+    <div className={className} style={{ color: `${style}` }}>
+      {message.text}
+    </div>
+  )
 }
 
 export default Notification
