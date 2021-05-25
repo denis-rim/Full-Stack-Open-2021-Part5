@@ -37,5 +37,24 @@ describe('Blog app', function () {
 
       cy.get('html').should('not.contain', 'New user logged in')
     })
+
+    describe('when logged in', function () {
+      beforeEach(function () {
+        cy.get('#username').type('newuser')
+        cy.get('#password').type('password')
+        cy.get('#login-button').click()
+      })
+
+      it('a blog can be created', function () {
+        cy.get('#open-button').click()
+
+        cy.get('#title').type('Cypress blog')
+        cy.get('#author').type('Cypress')
+        cy.get('#url').type('https://www.cypress.io/')
+        cy.get('#add-blog-button').click()
+
+        cy.contains('Cypress blog')
+      })
+    })
   })
 })
