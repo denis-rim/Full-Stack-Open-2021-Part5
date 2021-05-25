@@ -20,15 +20,18 @@ describe('<Blog/>', () => {
     },
   ]
 
+  const mockHandlerLike = jest.fn()
+
   let component
 
-  beforeEach(() => (component = render(<Blog blog={blog} user={user} />)))
+  beforeEach(
+    () =>
+      (component = render(
+        <Blog blog={blog} user={user} addLike={mockHandlerLike} />
+      ))
+  )
 
   test('render its title', () => {
-    const div = component.container.querySelector('div')
-
-    console.log(prettyDOM(div))
-
     expect(component.container).toHaveTextContent('Test blog title')
   })
 
@@ -51,5 +54,22 @@ describe('<Blog/>', () => {
     expect(component.container).toHaveTextContent('Test blog url')
 
     expect(component.container).toHaveTextContent('1')
+  })
+
+  test('clicking the like button twice calls event handler passed as a prop twice', () => {
+    const button = component.getByText('View')
+
+    fireEvent.click(button)
+
+    const div = component.container.querySelector('div')
+
+    console.log(prettyDOM(div))
+
+    const likeButton = component.getByText('like')
+
+    fireEvent.click(likeButton)
+    fireEvent.click(likeButton)
+
+    expect(mockHandlerLike.mock.calls).toHaveLength(2)
   })
 })
