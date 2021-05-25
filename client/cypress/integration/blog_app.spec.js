@@ -7,6 +7,13 @@ describe('Blog app', function () {
       password: 'password',
     }
     cy.request('POST', 'http://localhost:3003/api/users/', user)
+
+    const secondUser = {
+      name: 'Second User',
+      username: 'secondUser',
+      password: 'password',
+    }
+    cy.request('POST', 'http://localhost:3003/api/users/', secondUser)
     cy.visit('http://localhost:3000')
   })
 
@@ -69,7 +76,32 @@ describe('Blog app', function () {
           cy.get('#like-button').click()
           cy.get('#like-count').should('contain', 1)
         })
+
+        it('a user who created the blog can delete it', function () {
+          cy.contains('View').click()
+          cy.contains('Denis new blog')
+          cy.get('#delete-button').click()
+          cy.contains('Denis new blog').should('not.exist')
+        })
       })
+    })
+  })
+
+  describe('When another user logs in', function () {
+    beforeEach(function () {
+      cy.login({ username: 'secondUser', password: 'password' })
+      cy.createBlog({
+        title: 'Blog of second User',
+        author: 'secondUser',
+        url: 'http://second-user.com',
+      })
+    })
+
+    it('user cant delete blog created by another user', function () {
+      cy.login({ username: 'newuser', password: 'password' })
+      cy.contains('Blog of second User')
+      cy.contains('View').click()
+      cy.get('#delete-button').should('not.exist')
     })
   })
 })

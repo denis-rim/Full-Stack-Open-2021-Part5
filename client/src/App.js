@@ -124,7 +124,10 @@ const App = () => {
       {user && (
         <div>
           <h3>
-            {user.name} logged in <button onClick={handleLogout}>logout</button>
+            {user.name} logged in{' '}
+            <button id="logout-button" onClick={handleLogout}>
+              logout
+            </button>
           </h3>
           {addBlogForm()}
         </div>
