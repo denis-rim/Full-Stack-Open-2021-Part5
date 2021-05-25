@@ -134,18 +134,19 @@ const App = () => {
       )}
 
       <Notification message={notificationMessage} />
-
-      {blogs
-        .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            addLike={likeBlog}
-            removeBlog={deleteBlog}
-            user={user}
-          />
-        ))}
+      <div id="blogs-list">
+        {blogs
+          .sort((a, b) => b.likes - a.likes)
+          .map((blog) => (
+            <Blog
+              key={blog.id}
+              blog={blog}
+              addLike={likeBlog}
+              removeBlog={deleteBlog}
+              user={user}
+            />
+          ))}
+      </div>
     </div>
   )
 }

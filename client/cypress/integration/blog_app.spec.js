@@ -24,7 +24,7 @@ describe('Blog app', function () {
     cy.get('#login-button')
   })
 
-  describe('Login', function () {
+  describe('login', function () {
     it('succeeds with correct credentials', function () {
       cy.get('#username').type('newuser')
       cy.get('#password').type('password')
@@ -84,24 +84,57 @@ describe('Blog app', function () {
           cy.contains('Denis new blog').should('not.exist')
         })
       })
-    })
-  })
 
-  describe('When another user logs in', function () {
-    beforeEach(function () {
-      cy.login({ username: 'secondUser', password: 'password' })
-      cy.createBlog({
-        title: 'Blog of second User',
-        author: 'secondUser',
-        url: 'http://second-user.com',
+      describe('and multiple blogs exists', function () {
+        beforeEach(function () {
+          cy.createBlog({
+            title: 'Blog with 0 likes',
+            author: 'Bloggger',
+            url: 'https://www.cypress.io/',
+            likes: 0,
+          })
+
+          cy.createBlog({
+            title: 'Blog with 1 likes',
+            author: 'Bloggger',
+            url: 'https://www.cypress.io/',
+            likes: 1,
+          })
+
+          cy.createBlog({
+            title: 'Blog with 2 likes',
+            author: 'Bloggger',
+            url: 'https://www.cypress.io/',
+            likes: 2,
+          })
+        })
+
+        it('blogs are ordered based on number of likes', function () {
+          cy.get('.blog').should((blogs) => {
+            expect(blogs[0]).to.contain('Blog with 2 likes')
+            expect(blogs[1]).to.contain('Blog with 1 likes')
+            expect(blogs[2]).to.contain('Blog with 0 likes')
+          })
+        })
       })
     })
 
-    it('user cant delete blog created by another user', function () {
-      cy.login({ username: 'newuser', password: 'password' })
-      cy.contains('Blog of second User')
-      cy.contains('View').click()
-      cy.get('#delete-button').should('not.exist')
+    describe('when another user logs in', function () {
+      beforeEach(function () {
+        cy.login({ username: 'secondUser', password: 'password' })
+        cy.createBlog({
+          title: 'Blog of second User',
+          author: 'secondUser',
+          url: 'http://second-user.com',
+        })
+      })
+
+      it('user cant delete blog created by another user', function () {
+        cy.login({ username: 'newuser', password: 'password' })
+        cy.contains('Blog of second User')
+        cy.contains('View').click()
+        cy.get('#delete-button').should('not.exist')
+      })
     })
   })
 })
